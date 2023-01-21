@@ -17,8 +17,26 @@ namespace NZWalks.API.Controllers
         [HttpGet]
         public IActionResult GetAllRegions()
         {
+            //return DTO regions
 
-            return Ok(regionRepository.GetAll());
+            var regions = regionRepository.GetAll();
+            var regionsDTO = new List<Models.DTO.Region>();
+            regions.ToList().ForEach(region =>
+            {
+                var regionDTO = new Models.DTO.Region() 
+                { 
+                    Id=region.Id,
+                     Code= region.Code,
+                     Name=region.Name,
+                     Area=region.Area,
+                     Lat=region.Lat,
+                     Long=region.Long,
+                     Population=region.Population,
+                };
+
+                regionsDTO.Add(regionDTO);
+            });
+            return Ok(regionsDTO);
         }
     }
 }

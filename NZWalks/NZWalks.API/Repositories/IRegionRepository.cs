@@ -6,5 +6,6 @@ namespace NZWalks.API.Repositories
     {
         IEnumerable<Region> GetAll();
 
+
     }
 }

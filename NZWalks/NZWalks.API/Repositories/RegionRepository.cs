@@ -11,6 +11,8 @@ namespace NZWalks.API.Repositories
         {
             this.nZWalksDbContext = nZWalksDbContext;
         }
+
+
         public IEnumerable<Region> GetAll()
         {
             return nZWalksDbContext.Regions.ToList(); 

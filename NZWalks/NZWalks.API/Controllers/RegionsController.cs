@@ -18,7 +18,7 @@ namespace NZWalks.API.Controllers
             this.mapper = mapper;
         }
         [HttpGet]
-        public async Task<IActionResult> GetAllRegions()
+        public async Task<IActionResult> GetAllRegionsAsync()
         {
             //return DTO regions
 
@@ -42,6 +42,57 @@ namespace NZWalks.API.Controllers
 
             var regionsDTO = mapper.Map<List<Models.DTO.Region>>(regions);
             return Ok(regionsDTO);
+        }
+
+        [HttpGet]
+        [Route("{id:guid}")]
+        [ActionName(nameof(GetRegionAsync))]
+        public async Task<IActionResult> GetRegionAsync(Guid id)
+        {
+            var region = await regionRepository.GetAsync(id);
+            if (region == null)
+            {
+                return NotFound();
+            }
+
+            var regionDTO = mapper.Map<Models.DTO.Region>(region);
+            return Ok(regionDTO);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddRegionAsync(Models.DTO.AddRegionRequest addRegionRequest)
+        {
+            // Request(DTO) to domain
+            var region = new Models.Domain.Region()
+            {
+                Code= addRegionRequest.Code,
+                Name = addRegionRequest.Name,
+                Area = addRegionRequest.Area,
+                Lat= addRegionRequest.Lat,
+                Long= addRegionRequest.Long,
+                Population= addRegionRequest.Population,
+
+            };
+
+            //Pass details to repository 
+
+            region =  await regionRepository.AddAsync(region);
+            //Convert data back to DTO
+
+            var regionDTO = new Models.DTO.Region()
+            {
+                Id = region.Id,
+                Name= region.Name,
+                Code= region.Code,
+                Area= region.Area,
+                Lat= region.Lat,
+                Long= region.Long,
+                Population= region.Population,
+
+            };
+            return CreatedAtAction(nameof(GetRegionAsync),new { id=regionDTO.Id},regionDTO);
+
+                
         }
     }
 }

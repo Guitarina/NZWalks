@@ -94,5 +94,36 @@ namespace NZWalks.API.Controllers
 
                 
         }
+
+        [HttpDelete("{id:guid}")]
+        public async Task<IActionResult> DeleteRegionAsync(Guid id)
+        {
+            //get the region from db
+            var region = await regionRepository.DeleteAsync(id);
+
+            //if null return notfound
+
+            if (region == null)
+                return NotFound();
+
+            //convert to DTO model
+
+
+            //var regionDTO = new Models.DTO.Region()
+            //{
+            //    Id = region.Id,
+            //    Code = region.Code,
+            //    Name=region.Name,
+            //    Area=region.Area,
+            //    Lat=region.Lat,
+            //    Long=region.Long,
+            //    Population=region.Population
+
+            //};
+            var regionDTO = mapper.Map<Models.DTO.Region>(region);
+
+            //return Ok responce 
+            return Ok(regionDTO);
+        }
     }
 }

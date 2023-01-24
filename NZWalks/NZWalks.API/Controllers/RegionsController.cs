@@ -134,8 +134,6 @@ namespace NZWalks.API.Controllers
             ([FromRoute] Guid id,[FromBody] Models.DTO.UpdateRegionRequest updateRegionRequest)
         {
             //convert dto to domain model
-            //var regionDomain = mapper.Map<Models.DTO.Region>(updateRegionRequest);
-
             var regionDomain = new Models.Domain.Region()
             {
                 Code = updateRegionRequest.Code,

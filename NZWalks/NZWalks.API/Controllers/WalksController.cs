@@ -32,6 +32,7 @@ namespace NZWalks.API.Controllers
         }
         [HttpGet]
         [Route("{id:guid}")]
+        [ActionName("GetWalkAsync")]
         public async Task<IActionResult> GetWalkAsync(Guid id)
         {
             //Get walk domain from database
@@ -48,9 +49,33 @@ namespace NZWalks.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddWalkAsync(Models.DTO.AddWalkRequest)
+        public async Task<IActionResult> AddWalkAsync([FromBody] Models.DTO.AddWalkRequest addWalkRequest)
         {
-            /////////////////////123
+            //convert dto to domain
+            var walkDomain = new Models.Domain.Walk()
+            {
+                Length = addWalkRequest.Length,
+                Name = addWalkRequest.Name,
+                WalkDifficultyId = addWalkRequest.WalkDifficultyId,
+                RegionId = addWalkRequest.RegionId
+            };
+
+            //pass domain object to repository to persist this
+            walkDomain = await walkRepository.AddAsync(walkDomain);
+
+            //convert domain to dto
+            var walkDTO = new Models.DTO.Walk
+            {
+                Id = walkDomain.Id,
+                Length = walkDomain.Length,
+                Name = walkDomain.Name,
+                RegionId = walkDomain.RegionId,
+                WalkDifficultyId = walkDomain.WalkDifficultyId
+            };
+
+            //send dto back to client
+
+            return CreatedAtAction(nameof(GetWalkAsync), new { id = walkDTO.Id },walkDTO);
         }
     }
 }

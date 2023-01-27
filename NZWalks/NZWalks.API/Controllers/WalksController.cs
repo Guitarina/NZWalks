@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using NZWalks.API.Models.DTO;
 using NZWalks.API.Repositories;
 
 namespace NZWalks.API.Controllers
@@ -75,7 +76,54 @@ namespace NZWalks.API.Controllers
 
             //send dto back to client
 
-            return CreatedAtAction(nameof(GetWalkAsync), new { id = walkDTO.Id },walkDTO);
+            return CreatedAtAction(nameof(GetWalkAsync), new { id = walkDTO.Id }, walkDTO);
+        }
+
+        [HttpPut]
+        [Route("{id:guid}")]
+        public async Task<IActionResult> UpdateWalkAsync([FromRoute] Guid id, [FromBody] Models.DTO.UpdateWalkRequest updateWalkRequest)
+        {
+            //convert to domain object
+
+            var walkDomain = new Models.Domain.Walk
+            {
+                Length = updateWalkRequest.Length,
+                Name = updateWalkRequest.Name,
+                WalkDifficultyId = updateWalkRequest.WalkDifficultyId,
+                RegionId = updateWalkRequest.RegionId
+            };
+            //pass details to repositoryupdateWalkRequest
+
+            walkDomain = await walkRepository.UpdateAsync(id, walkDomain);
+
+            //handle not found if null
+            if (walkDomain == null)
+                return NotFound("Walk with this id  wasn't found");
+
+            //convert back domain to dto and return response
+
+            var walkDTO = new Models.DTO.Walk
+            {
+                Id = walkDomain.Id,
+                Length = walkDomain.Length,
+                Name = walkDomain.Name,
+                WalkDifficultyId = walkDomain.WalkDifficultyId,
+                RegionId = walkDomain.RegionId
+            };
+            return Ok(walkDTO);
+        }
+
+        [HttpDelete]
+        [Route("{id:guid}")]
+        public async Task<IActionResult> DeleteWalkAsync(Guid id)
+        {
+            var walk = await walkRepository.DeleteAsync(id);
+
+            if (walk == null) return NotFound();
+
+            var walkDTO = mapper.Map<Models.DTO.Walk>(walk);
+
+            return Ok(walk);
         }
     }
 }

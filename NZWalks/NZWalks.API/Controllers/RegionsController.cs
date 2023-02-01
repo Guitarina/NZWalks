@@ -63,8 +63,8 @@ namespace NZWalks.API.Controllers
         public async Task<IActionResult> AddRegionAsync(Models.DTO.AddRegionRequest addRegionRequest)
         {
             //Validate the request
-            if (!ValidateAddRegionAsync(addRegionRequest))
-                return BadRequest(ModelState);
+            //if (!ValidateAddRegionAsync(addRegionRequest))
+            //    return BadRequest(ModelState);
 
 
             // Request(DTO) to domain
@@ -80,10 +80,9 @@ namespace NZWalks.API.Controllers
             };
 
             //Pass details to repository 
-
             region = await regionRepository.AddAsync(region);
-            //Convert data back to DTO
 
+            //Convert data back to DTO
             var regionDTO = new Models.DTO.Region()
             {
                 Id = region.Id,
@@ -96,8 +95,6 @@ namespace NZWalks.API.Controllers
 
             };
             return CreatedAtAction(nameof(GetRegionAsync), new { id = regionDTO.Id }, regionDTO);
-
-
         }
 
         [HttpDelete("{id:guid}")]
@@ -107,24 +104,10 @@ namespace NZWalks.API.Controllers
             var region = await regionRepository.DeleteAsync(id);
 
             //if null return notfound
-
             if (region == null)
                 return NotFound();
 
             //convert to DTO model
-
-
-            //var regionDTO = new Models.DTO.Region()
-            //{
-            //    Id = region.Id,
-            //    Code = region.Code,
-            //    Name=region.Name,
-            //    Area=region.Area,
-            //    Lat=region.Lat,
-            //    Long=region.Long,
-            //    Population=region.Population
-
-            //};
             var regionDTO = mapper.Map<Models.DTO.Region>(region);
 
             //return Ok responce 
